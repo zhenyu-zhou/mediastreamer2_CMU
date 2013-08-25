@@ -74,14 +74,14 @@ static int cond=1;
 
 
 typedef struct _MediastreamIceCandidate {
-	char ip[64];
+	char ip[200];
 	char type[6];
 	int port;
 } MediastreamIceCandidate;
 
 typedef struct _MediastreamDatas {
 	int localport,remoteport,payload;
-	char ip[64];
+	char ip[200];
 	char *fmtp;
 	int jitter;
 	int bitrate;
