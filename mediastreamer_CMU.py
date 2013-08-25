@@ -1,6 +1,6 @@
 import sys
 import os
-import subprocess
+import time
 
 # find the path to xia-core
 sys.path.append('/usr/local/lib')
@@ -37,25 +37,26 @@ def getAD_HID(dag):
 			break
 	return (ad, hid)
 
+try:
+	local_name = raw_input("Please enter your name:")
 
-local_name = raw_input("Please enter your name:")
+	sock = Xsocket(XSOCK_DGRAM)
+	(local_ad, local_hid, fid) = XreadLocalHostAddr(sock)
+	local_dag = "RE %s %s %s" % (local_ad, local_hid, cal_sid_port(local_name)[0])
+	local_port = cal_sid_port(local_name)[1]
 
-sock = Xsocket(XSOCK_DGRAM)
-(local_ad, local_hid, fid) = XreadLocalHostAddr(sock)
-local_dag = "RE %s %s %s" % (local_ad, local_hid, cal_sid_port(local_name)[0])
-local_port = cal_sid_port(local_name)[1]
+	XregisterName(local_name, local_dag)
 
-XregisterName(local_name, local_dag)
+	remote_name = raw_input("Please enter your partener's name:")
+	remote_dag = XgetDAGbyName(remote_name)
+	(remote_ad, remote_hid) = getAD_HID(remote_dag)
+	remote_port = cal_sid_port(remote_name)[1]
 
-remote_name = raw_input("Please enter your partener's name:")
-remote_dag = XgetDAGbyName(remote_name)
-(remote_ad, remote_hid) = getAD_HID(remote_dag)
-remote_port = cal_sid_port(remote_name)[1]
+	audio_command = "gnome-terminal -x mediastream --local %d --remote %s\\ %s:%d --payload 110" % (local_port, remote_ad, remote_hid, remote_port)
+	video_command = "gnome-terminal -x mediastream --local %d --remote %s\\ %s:%d --payload 102 --mtu 1450" % (local_port + 1, remote_ad, remote_hid, remote_port + 1)
 
-audio_command = ["gnome-terminal", "-x","mediastream", "--local", str(local_port), "--remote", remote_ad + "\\" + remote_hid + ":" + str(remote_port), "--payload", "110"]
-video_command = ["gnome-terminal", "-x","mediastream", "--local", str(local_port + 1), "--remote", remote_ad + "\\" + remote_hid + ":" + str(remote_port + 1), "--payload", "102", "--mtu", "1450"]
-
-p_video = subprocess.Popen(video_command)
-p_audio = subprocess.Popen(audio_command)
-p_video.poll()
-p_audio.poll()
+	os.system(video_command)
+	time.sleep(1)
+	os.system(audio_command)
+except:
+	print "Oops, an error occured."
