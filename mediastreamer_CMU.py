@@ -52,7 +52,7 @@ try:
 	(remote_ad, remote_hid) = getAD_HID(remote_dag)
 	remote_port = cal_sid_port(remote_name)[1]
 
-	audio_command = "gnome-terminal -x mediastream --local %d --remote %s\\ %s:%d --payload 110" % (local_port + 16, remote_ad, remote_hid, remote_port + 16)
+	audio_command = "gnome-terminal -x mediastream --local %d --remote %s\\ %s:%d --payload 110 --bitrate 441000" % (local_port + 16, remote_ad, remote_hid, remote_port + 16)
 	video_command = "gnome-terminal -x mediastream --local %d --remote %s\\ %s:%d --payload 102 --mtu 1450" % (local_port, remote_ad, remote_hid, remote_port)
 
 	os.system(video_command)
